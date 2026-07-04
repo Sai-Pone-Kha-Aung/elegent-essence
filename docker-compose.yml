@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  # Next.js web application service containing the embedded SQLite database
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: elegant_essence_web
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=file:/app/prisma/dev.db
+      - NODE_ENV=production
+    volumes:
+      - sqlite-data:/app/prisma
+    restart: always
+
+volumes:
+  # Named volume to persist dev.db SQLite database file across updates
+  sqlite-data:

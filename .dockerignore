@@ -1,0 +1,12 @@
+node_modules
+.next
+out
+build
+dist
+.git
+.gitignore
+.env*.local
+README.md
+Note.md
+Backend Instruction.md
+pnpm-debug.log
