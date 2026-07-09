@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { useProducts } from "@/hooks/useProducts";
+import { Category } from "@/types";
 import { formatCurrency, formatStock } from "@/lib/format";
 import { Product } from "@/types";
 
@@ -12,7 +13,7 @@ export default function AdminProductsClient() {
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newName, setNewName] = useState("");
-  const [newCategory, setNewCategory] = useState("Woody & Warm");
+  const [newCategory, setNewCategory] = useState<Category>(Category.WOODY_SPICY);
   const [newPrice, setNewPrice] = useState("150");
   const [newStock, setNewStock] = useState("20");
   const [newDescription, setNewDescription] = useState("");
@@ -58,11 +59,11 @@ export default function AdminProductsClient() {
     
     let matchesStatus = true;
     if (selectedStatus === "In Stock") {
-      matchesStatus = product.status === "In Stock";
+      matchesStatus = product.status.toUpperCase().replace("_", " ") === "IN STOCK";
     } else if (selectedStatus === "Low Stock") {
-      matchesStatus = product.status === "Low Stock";
+      matchesStatus = product.status.toUpperCase().replace("_", " ") === "LOW STOCK";
     } else if (selectedStatus === "Out of Stock") {
-      matchesStatus = product.status === "Out of Stock";
+      matchesStatus = product.status.toUpperCase().replace("_", " ") === "OUT OF STOCK";
     }
 
     return matchesSearch && matchesStatus;
@@ -167,14 +168,14 @@ export default function AdminProductsClient() {
                   <td className="py-4">
                     <span
                       className={`rounded-full px-2.5 py-0.5 text-[9px] font-bold border ${
-                        product.status === "In Stock"
+                        product.status.toUpperCase().replace("_", " ") === "IN STOCK"
                           ? "bg-emerald-50 text-emerald-700 border-emerald-150 dark:bg-emerald-950/25 dark:text-emerald-400 dark:border-emerald-900/20"
-                          : product.status === "Low Stock"
+                          : product.status.toUpperCase().replace("_", " ") === "LOW STOCK"
                           ? "bg-amber-50 text-amber-700 border-amber-150 dark:bg-amber-950/25 dark:text-amber-455 dark:border-amber-900/20"
                           : "bg-red-50 text-red-750 border-red-150 dark:bg-red-950/25 dark:text-red-400 dark:border-red-900/20"
                       }`}
                     >
-                      {product.status}
+                      {product.status.toUpperCase().replace("_", " ")}
                     </span>
                   </td>
                   <td className="py-4 text-right">
@@ -239,15 +240,15 @@ export default function AdminProductsClient() {
                   </label>
                   <select
                     value={newCategory}
-                    onChange={(e) => setNewCategory(e.target.value)}
+                    onChange={(e) => setNewCategory(e.target.value as Category)}
                     className="mt-1 block w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs text-zinc-900 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950 dark:text-white"
                   >
-                    <option>Woody & Warm</option>
-                    <option>Floral & Fresh</option>
-                    <option>Oriental & Rich</option>
-                    <option>Fresh & Citrus</option>
-                    <option>Fresh & Aquatic</option>
-                    <option>Sensual Floral</option>
+                    <option value={Category.WOODY_SPICY}>Woody & Warm</option>
+                    <option value={Category.FLORAL}>Floral & Fresh</option>
+                    <option value={Category.AMBER_FLORAL}>Oriental & Rich</option>
+                    <option value={Category.AROMATIC_FRUITY}>Fresh & Citrus</option>
+                    <option value={Category.WOODY_AROMATIC}>Fresh & Aquatic</option>
+                    <option value={Category.ORIENTAL_FLORAL}>Sensual Floral</option>
                   </select>
                 </div>
                 <div>

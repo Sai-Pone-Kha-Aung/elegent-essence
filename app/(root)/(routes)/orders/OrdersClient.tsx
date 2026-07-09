@@ -8,12 +8,12 @@ export default function OrdersClient() {
   const { orders } = useOrders();
 
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Delivered":
+    switch (status.toUpperCase()) {
+      case "DELIVERED":
         return "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400 border-emerald-200/50 dark:border-emerald-900/30";
-      case "Shipped":
+      case "SHIPPED":
         return "bg-blue-100 text-blue-850 dark:bg-blue-950/40 dark:text-blue-400 border-blue-200/50 dark:border-blue-900/30";
-      case "Processing":
+      case "PROCESSING":
       default:
         return "bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-400 border-amber-200/50 dark:border-amber-900/30";
     }
@@ -72,7 +72,7 @@ export default function OrdersClient() {
                       order.status
                     )}`}
                   >
-                    {order.status}
+                    {order.status.charAt(0) + order.status.slice(1).toLowerCase()}
                   </span>
                 </div>
               </div>
