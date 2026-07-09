@@ -1,6 +1,6 @@
 "use client";
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { User } from "@/types";
+import { User, Role, UserStatus } from "@/types";
 import { INITIAL_USERS } from "@/lib/data";
 
 interface ProfileContextType {
@@ -8,7 +8,7 @@ interface ProfileContextType {
   users: User[];
   saveProfile: (updates: Partial<User>) => void;
   toggleSuspendUser: (email: string) => void;
-  changeUserRole: (email: string, role: "Customer" | "Admin") => void;
+  changeUserRole: (email: string, role: Role) => void;
   addUser: (user: Omit<User, "joined">) => void;
 }
 
@@ -62,7 +62,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
       if (u.email === email) {
         return {
           ...u,
-          status: u.status === "Active" ? ("Suspended" as const) : ("Active" as const),
+          status: u.status === "ACTIVE" ? ("SUSPENDED" as UserStatus) : ("ACTIVE" as UserStatus),
         };
       }
       return u;
@@ -70,7 +70,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     saveUsersState(updatedUsers);
   };
 
-  const changeUserRole = (email: string, role: "Customer" | "Admin") => {
+  const changeUserRole = (email: string, role: Role) => {
     const updatedUsers = users.map((u) => {
       if (u.email === email) {
         return { ...u, role };

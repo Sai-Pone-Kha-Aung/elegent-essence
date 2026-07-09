@@ -32,7 +32,7 @@ export function ProductsProvider({ children }: { children: React.ReactNode }) {
 
   const addProduct = (p: Omit<Product, "id" | "status">) => {
     const id = (products.length + 1).toString();
-    const status = p.stock > 15 ? "In Stock" : p.stock > 0 ? "Low Stock" : "Out of Stock";
+    const status = p.stock > 15 ? "IN_STOCK" : p.stock > 0 ? "LOW_STOCK" : "OUT_OF_STOCK";
     const newProduct: Product = {
       ...p,
       id,
@@ -49,7 +49,7 @@ export function ProductsProvider({ children }: { children: React.ReactNode }) {
     saveProducts(
       products.map((p) => {
         if (p.id === id) {
-          const status = stock > 15 ? "In Stock" : stock > 0 ? "Low Stock" : "Out of Stock";
+          const status = stock > 15 ? "IN_STOCK" : stock > 0 ? "LOW_STOCK" : "OUT_OF_STOCK";
           return { ...p, stock, status };
         }
         return p;

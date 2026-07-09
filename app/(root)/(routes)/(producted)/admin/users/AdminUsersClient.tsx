@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { useProfile } from "@/hooks/useProfile";
+import { Role, UserStatus } from "@/types";
 
 export default function AdminUsersClient() {
   const { users, toggleSuspendUser, changeUserRole, addUser } = useProfile();
@@ -12,7 +13,7 @@ export default function AdminUsersClient() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newName, setNewName] = useState("");
   const [newEmail, setNewEmail] = useState("");
-  const [newRole, setNewRole] = useState<"Customer" | "Admin">("Admin");
+  const [newRole, setNewRole] = useState<Role>(Role.ADMIN);
 
   const handleAddStaff = (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,12 +23,12 @@ export default function AdminUsersClient() {
       name: newName,
       email: newEmail,
       role: newRole,
-      status: "Active",
+      status: UserStatus.ACTIVE,
     });
 
     setNewName("");
     setNewEmail("");
-    setNewRole("Admin");
+    setNewRole(Role.ADMIN);
     setIsModalOpen(false);
   };
 
@@ -38,11 +39,11 @@ export default function AdminUsersClient() {
 
     const matchesRole =
       selectedRole === "All Roles" ||
-      user.role === selectedRole;
+      user.role.toUpperCase() === selectedRole.toUpperCase();
 
     const matchesStatus =
       selectedStatus === "All Statuses" ||
-      user.status === selectedStatus;
+      user.status.toUpperCase() === selectedStatus.toUpperCase();
 
     return matchesSearch && matchesRole && matchesStatus;
   });
@@ -137,17 +138,17 @@ export default function AdminUsersClient() {
                   <td className="py-4 text-zinc-700 dark:text-zinc-300 font-medium">
                     <select
                       value={user.role}
-                      onChange={(e) => changeUserRole(user.email, e.target.value as "Customer" | "Admin")}
+                      onChange={(e) => changeUserRole(user.email, e.target.value as Role)}
                       className="bg-transparent border-none outline-none font-semibold text-zinc-700 dark:text-zinc-300 cursor-pointer"
                     >
-                      <option value="Customer">Customer</option>
-                      <option value="Admin">Admin</option>
+                      <option value={Role.CUSTOMER}>Customer</option>
+                      <option value={Role.ADMIN}>Admin</option>
                     </select>
                   </td>
                   <td className="py-4">
                     <span
                       className={`rounded-full px-2.5 py-0.5 text-[9px] font-bold border ${
-                        user.status === "Active"
+                        user.status.toUpperCase() === "ACTIVE"
                           ? "bg-emerald-50 text-emerald-700 border-emerald-150 dark:bg-emerald-950/25 dark:text-emerald-400 dark:border-emerald-900/20"
                           : "bg-red-50 text-red-750 border-red-150 dark:bg-red-950/25 dark:text-red-400 dark:border-red-900/20"
                       }`}
@@ -172,12 +173,12 @@ export default function AdminUsersClient() {
                     <button
                       onClick={() => toggleSuspendUser(user.email)}
                       className={`text-xs font-semibold hover:underline cursor-pointer ${
-                        user.status === "Active"
+                        user.status.toUpperCase() === "ACTIVE"
                           ? "text-red-500 hover:text-red-400"
                           : "text-emerald-600 hover:text-emerald-500"
                       }`}
                     >
-                      {user.status === "Active" ? "Suspend" : "Activate"}
+                      {user.status.toUpperCase() === "ACTIVE" ? "Suspend" : "Activate"}
                     </button>
                   </td>
                 </tr>
@@ -229,11 +230,11 @@ export default function AdminUsersClient() {
                 </label>
                 <select
                   value={newRole}
-                  onChange={(e) => setNewRole(e.target.value as "Customer" | "Admin")}
+                  onChange={(e) => setNewRole(e.target.value as Role)}
                   className="mt-1 block w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs text-zinc-900 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950 dark:text-white"
                 >
-                  <option value="Admin">Admin</option>
-                  <option value="Customer">Customer</option>
+                  <option value={Role.ADMIN}>Admin</option>
+                  <option value={Role.CUSTOMER}>Customer</option>
                 </select>
               </div>
 

@@ -1,0 +1,164 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User { 
+  id        String     @id @default(uuid()) 
+  name      String
+  email     String  @unique
+  password  String
+  role      Role    @default(CUSTOMER)
+  status    UserStatus  @default(ACTIVE)
+  phone     String?
+  address   String?
+  preference String?
+  orders    Order[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+} 
+
+model Product {
+  id            String @id @default(uuid()) 
+  name          String
+  brand         String
+  slug          String
+  description   String
+  notes         String?
+  ingredients   String?
+  imageBg       String
+  type          PerfumeType
+  category      Category
+  gender        Gender
+  volume        String?
+  longevity     Longevity
+  sillage       Sillage
+  price         Float @default(0.0)
+  rating        Float @default(0.0)
+  reviews       Int @default(0)
+  stock         Int @default(0)
+  status        ProductStatus @default(AVAILABLE)
+  orderItems    OrderItem[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Order {
+  id            String @id @default(uuid())
+  date          DateTime @default(now())
+  total         Float
+  status        OrderStatus @default(PENDING)
+  buyerId       String
+  buyer         User @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  items         OrderItem[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  transaction   Transaction[]
+}
+
+model OrderItem {
+  id            String @id @default(uuid())
+  orderId       String
+  order         Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId     String?
+  product       Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  name          String
+  quantity      Int
+  volume        String
+  price         Float
+  createdAt     DateTime @default(now())
+}
+
+model Transaction {
+  id          String  @id @default(uuid())
+  orderId     String
+  order       Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  customer    String
+  date        DateTime @default(now())
+  status      TransactionStatus   @default(PENDING)
+  amount      Float
+  createdAt   DateTime @default(now())
+}
+
+enum Longevity {
+  EIGHT_TWELVE_HOURS       @map("8-12 Hours")
+  SIX_EIGHT_HOURS          @map("6-8 Hours")
+  FOUR_SIX_HOURS           @map("4-6 Hours")
+  TWO_FOUR_HOURS           @map("2-4 Hours")
+  LESS_THAN_TWO_HOURS      @map("Less than 2 Hours")
+}
+
+enum Sillage {
+  STRONG       @map("Strong")
+  MEDIUM       @map("Medium")
+  LIGHT        @map("Light")
+  VERY_STRONG   @map("Very Strong")
+  VERY_LIGHT    @map("Very Light")
+}
+
+enum Gender {
+  MALE       @map("Male")
+  FEMALE     @map("Female")
+  UNISEX     @map("Unisex")
+}
+
+enum Category {
+  WOODY_SPICY      @map("Woody Spicy")
+  WOODY_AROMATIC   @map("Woody Aromatic")
+  AMBER_FLORAL     @map("Amber Floral")
+  FLORIENTAL       @map("Floriental")
+  ORIENTAL_FLORAL  @map("Oriental Floral")
+  AROMATIC_FRUITY  @map("Aromatic Fruity")
+  AROMATIC_SPICY   @map("Aromatic Spicy")
+  FLORAL           @map("Floral")
+}
+
+enum PerfumeType {
+  PARFUM   @map("Parfum")
+  EDT      @map("EDT")
+  EDP      @map("EDP")
+  EDC      @map("EDC")
+}
+
+enum Role {
+  CUSTOMER @map("Customer")
+  ADMIN    @map("Admin")
+}
+
+enum UserStatus {
+  ACTIVE    @map("Active")
+  SUSPENDED @map("Suspended")
+}
+
+enum ProductStatus {
+  AVAILABLE @map("Available")
+  OUT_OF_STOCK @map("Out of Stock")
+  LOW_STOCK @map("Low Stock")
+  IN_STOCK @map("In Stock")
+  COMING_SOON @map("Coming Soon")
+}
+
+enum TransactionStatus {
+  PAID @map("Paid")
+  PENDING @map("Pending")
+  FAILED @map("Failed")
+  REFUNDED @map("Refunded")
+  COMPLETED @map("Completed")
+}
+
+enum OrderStatus {
+  PROCESSING @map("Processing")
+  SHIPPED @map("Shipped")
+  DELIVERED @map("Delivered")
+  CANCELLED @map("Cancelled")
+  PENDING   @map("Pending")
+}

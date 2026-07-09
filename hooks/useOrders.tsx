@@ -1,13 +1,13 @@
 "use client";
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { Order, CartItem } from "@/types";
+import { Order, CartItem, OrderStatus } from "@/types";
 import { INITIAL_ORDERS } from "@/lib/data";
 
 interface OrdersContextType {
   orders: Order[];
   placeOrder: (items: CartItem[], total: number, buyerName?: string) => string;
   shipOrder: (id: string) => void;
-  updateOrderStatus: (id: string, status: "Processing" | "Shipped" | "Delivered") => void;
+  updateOrderStatus: (id: string, status: OrderStatus) => void;
 }
 
 const OrdersContext = createContext<OrdersContextType | undefined>(undefined);
@@ -43,7 +43,7 @@ export function OrdersProvider({ children }: { children: React.ReactNode }) {
       id: orderId,
       date: dateStr,
       total,
-      status: "Processing",
+      status: OrderStatus.PROCESSING,
       buyer: buyerName,
       items: items.map((item) => ({
         name: item.name,
@@ -58,10 +58,10 @@ export function OrdersProvider({ children }: { children: React.ReactNode }) {
   };
 
   const shipOrder = (id: string) => {
-    updateOrderStatus(id, "Shipped");
+    updateOrderStatus(id, OrderStatus.SHIPPED);
   };
 
-  const updateOrderStatus = (id: string, status: "Processing" | "Shipped" | "Delivered") => {
+  const updateOrderStatus = (id: string, status: OrderStatus) => {
     saveOrders(
       orders.map((o) => {
         if (o.id === id) {

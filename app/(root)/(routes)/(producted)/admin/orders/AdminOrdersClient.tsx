@@ -15,7 +15,7 @@ export default function AdminOrdersClient() {
 
     const matchesFulfillment =
       selectedFulfillment === "All Fulfillments" ||
-      order.status === selectedFulfillment;
+      order.status.toUpperCase() === selectedFulfillment.toUpperCase();
 
     return matchesSearch && matchesFulfillment;
   });
@@ -102,18 +102,18 @@ export default function AdminOrdersClient() {
                     <td className="py-4">
                       <span
                         className={`rounded-full px-2.5 py-0.5 text-[9px] font-bold border ${
-                          order.status === "Delivered"
+                          order.status.toUpperCase() === "DELIVERED"
                             ? "bg-emerald-50 text-emerald-700 border-emerald-150 dark:bg-emerald-950/25 dark:text-emerald-400 dark:border-emerald-900/20"
-                            : order.status === "Shipped"
+                            : order.status.toUpperCase() === "SHIPPED"
                             ? "bg-blue-50 text-blue-700 border-blue-150 dark:bg-blue-950/25 dark:text-blue-400 dark:border-blue-900/20"
-                            : "bg-amber-50 text-amber-700 border-amber-150 dark:bg-amber-950/25 dark:text-amber-450 dark:border-amber-900/20"
+                            : "bg-amber-50 text-amber-700 border-amber-150 dark:bg-amber-950/25 dark:text-amber-455 dark:border-amber-900/20"
                         }`}
                       >
-                        {order.status}
+                        {order.status.charAt(0) + order.status.slice(1).toLowerCase()}
                       </span>
                     </td>
                     <td className="py-4 text-right">
-                      {order.status === "Processing" && (
+                      {order.status.toUpperCase() === "PROCESSING" && (
                         <button
                           onClick={() => shipOrder(order.id)}
                           className="text-xs font-semibold text-violet-650 hover:text-violet-550 dark:text-violet-400 hover:underline mr-4 cursor-pointer"
@@ -121,9 +121,9 @@ export default function AdminOrdersClient() {
                           Ship Package
                         </button>
                       )}
-                      {order.status === "Shipped" && (
+                      {order.status.toUpperCase() === "SHIPPED" && (
                         <button
-                          onClick={() => updateOrderStatus(order.id, "Delivered")}
+                          onClick={() => updateOrderStatus(order.id, "DELIVERED")}
                           className="text-xs font-semibold text-emerald-600 hover:text-emerald-500 hover:underline mr-4 cursor-pointer"
                         >
                           Mark Delivered

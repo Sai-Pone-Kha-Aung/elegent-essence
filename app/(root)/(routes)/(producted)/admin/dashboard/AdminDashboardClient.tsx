@@ -12,9 +12,9 @@ export default function AdminDashboardClient() {
 
   // Dynamic calculations
   const totalRevenue = orders.reduce((sum, o) => sum + o.total, 0);
-  const activeCustomers = users.filter((u) => u.role === "Customer" && u.status === "Active").length;
+  const activeCustomers = users.filter((u) => u.role === "CUSTOMER" && u.status === "ACTIVE").length;
   const totalInventory = products.reduce((sum, p) => sum + p.stock, 0);
-  const pendingShipments = orders.filter((o) => o.status === "Processing").length;
+  const pendingShipments = orders.filter((o) => o.status === "PROCESSING").length;
 
   const stats = [
     {
