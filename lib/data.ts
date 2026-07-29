@@ -10,7 +10,7 @@ import {
   Role, 
   UserStatus, 
   TransactionStatus 
-} from "../generated/prisma/client";
+} from "../generated/prisma/enums";
 
 export const INITIAL_PRODUCTS: Product[] = [
   {

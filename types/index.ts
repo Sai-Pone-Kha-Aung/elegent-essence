@@ -9,7 +9,7 @@ import {
   ProductStatus,
   OrderStatus,
   TransactionStatus,
-} from "../generated/prisma/client";
+} from "../generated/prisma/enums";
 
 export {
   Role,

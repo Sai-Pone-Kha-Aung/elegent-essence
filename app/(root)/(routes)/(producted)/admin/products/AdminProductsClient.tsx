@@ -3,13 +3,12 @@ import React, { useState } from "react";
 import { useProducts } from "@/hooks/useProducts";
 import { Category } from "@/types";
 import { formatCurrency, formatStock } from "@/lib/format";
-import { Product } from "@/types";
 
 export default function AdminProductsClient() {
   const { products, addProduct, deleteProduct, updateStock } = useProducts();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("All Inventory Statuses");
-  
+
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newName, setNewName] = useState("");
@@ -56,7 +55,7 @@ export default function AdminProductsClient() {
 
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
-    
+
     let matchesStatus = true;
     if (selectedStatus === "In Stock") {
       matchesStatus = product.status.toUpperCase().replace("_", " ") === "IN STOCK";
@@ -167,13 +166,12 @@ export default function AdminProductsClient() {
                   </td>
                   <td className="py-4">
                     <span
-                      className={`rounded-full px-2.5 py-0.5 text-[9px] font-bold border ${
-                        product.status.toUpperCase().replace("_", " ") === "IN STOCK"
+                      className={`rounded-full px-2.5 py-0.5 text-[9px] font-bold border ${product.status.toUpperCase().replace("_", " ") === "IN STOCK"
                           ? "bg-emerald-50 text-emerald-700 border-emerald-150 dark:bg-emerald-950/25 dark:text-emerald-400 dark:border-emerald-900/20"
                           : product.status.toUpperCase().replace("_", " ") === "LOW STOCK"
-                          ? "bg-amber-50 text-amber-700 border-amber-150 dark:bg-amber-950/25 dark:text-amber-455 dark:border-amber-900/20"
-                          : "bg-red-50 text-red-750 border-red-150 dark:bg-red-950/25 dark:text-red-400 dark:border-red-900/20"
-                      }`}
+                            ? "bg-amber-50 text-amber-700 border-amber-150 dark:bg-amber-950/25 dark:text-amber-455 dark:border-amber-900/20"
+                            : "bg-red-50 text-red-750 border-red-150 dark:bg-red-950/25 dark:text-red-400 dark:border-red-900/20"
+                        }`}
                     >
                       {product.status.toUpperCase().replace("_", " ")}
                     </span>
