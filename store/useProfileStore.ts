@@ -11,6 +11,7 @@ interface ProfileState {
   toggleSuspendUser: (email: string) => void;
   changeUserRole: (email: string, role: Role) => void;
   addUser: (user: Omit<User, "joined">) => void;
+  logout: () => void;
 }
 
 const saveUsers = (users: User[]) => {
@@ -133,5 +134,9 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
       ...saveUsers(updatedUsers),
       profile: get().profile,
     });
+  },
+
+  logout: () => {
+    set({ profile: null });
   },
 }));
