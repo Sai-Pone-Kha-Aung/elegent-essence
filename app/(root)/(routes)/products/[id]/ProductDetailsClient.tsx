@@ -49,7 +49,7 @@ export default function ProductDetailsClient({ product }: ProductDetailsClientPr
         {/* Product Image representation */}
         <div className={`aspect-square w-full rounded-3xl bg-linear-to-br ${product.imageBg} relative overflow-hidden flex items-center justify-center shadow-lg border border-zinc-200/10`}>
           <div className="absolute inset-0 bg-black/5" />
-          
+
           {/* Decorative larger premium bottle layout */}
           <div className="w-32 h-56 border border-white/20 rounded-xl relative flex flex-col items-center justify-between p-4 bg-white/5 backdrop-blur-md shadow-2xl">
             <div className="w-8 h-8 border border-white/30 bg-white/20 rounded-t" />
@@ -82,11 +82,10 @@ export default function ProductDetailsClient({ product }: ProductDetailsClientPr
                 {[...Array(5)].map((_, i) => (
                   <svg
                     key={i}
-                    className={`h-4 w-4 ${
-                      i < Math.floor(product.rating)
-                        ? "text-amber-500 fill-amber-500"
-                        : "text-zinc-300 dark:text-zinc-700"
-                    }`}
+                    className={`h-4 w-4 ${i < Math.floor(product.rating)
+                      ? "text-amber-500 fill-amber-500"
+                      : "text-zinc-300 dark:text-zinc-700"
+                      }`}
                     viewBox="0 0 20 20"
                     fill="currentColor"
                   >
@@ -145,11 +144,10 @@ export default function ProductDetailsClient({ product }: ProductDetailsClientPr
                   <button
                     key={size}
                     onClick={() => setSelectedVolume(size)}
-                    className={`rounded-lg border px-4 py-2 text-xs font-semibold transition-all duration-200 cursor-pointer ${
-                      selectedVolume === size
-                        ? "border-violet-600 bg-violet-50 text-violet-700 dark:border-violet-400 dark:bg-violet-950/20 dark:text-violet-400"
-                        : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 dark:border-zinc-850 dark:bg-zinc-900 dark:text-zinc-300"
-                    }`}
+                    className={`rounded-lg border px-4 py-2 text-xs font-semibold transition-all duration-200 cursor-pointer ${selectedVolume === size
+                      ? "border-violet-600 bg-violet-50 text-violet-700 dark:border-violet-400 dark:bg-violet-950/20 dark:text-violet-400"
+                      : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 dark:border-zinc-850 dark:bg-zinc-900 dark:text-zinc-300"
+                      }`}
                   >
                     {size}
                   </button>

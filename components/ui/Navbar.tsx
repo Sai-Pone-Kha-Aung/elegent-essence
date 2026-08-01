@@ -4,18 +4,19 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useCart } from "@/hooks/useCart";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Navbar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const { cartCount } = useCart();
+  const { isLoggedIn, isAdmin, logout } = useAuth();
 
   const navItems = [
     { label: "Home", href: "/" },
     { label: "Products", href: "/products" },
-    { label: "Cart", href: "/cart" },
-    { label: "Profile", href: "/profile" },
-    { label: "Admin", href: "/admin/dashboard" },
+    ...(isLoggedIn ? [{ label: "Cart", href: "/cart" }, { label: "Profile", href: "/profile" }] : []),
+    ...(isAdmin ? [{ label: "Admin", href: "/admin/dashboard" }] : []),
   ];
 
   const isActive = (path: string) => {
@@ -62,38 +63,48 @@ export default function Navbar() {
 
           {/* Right Action Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link
-              href="/cart"
-              className="relative p-2 text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors"
-              aria-label="Shopping Cart"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="w-6 h-6"
+            {isLoggedIn && (
+              <Link
+                href="/cart"
+                className="relative p-2 text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors"
+                aria-label="Shopping Cart"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
-                />
-              </svg>
-              {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-violet-600 text-[10px] font-bold text-white dark:bg-violet-500 animate-pulse">
-                  {cartCount}
-                </span>
-              )}
-            </Link>
-
-            <Link
-              href="/sign-in"
-              className="rounded-full bg-zinc-900 px-4 py-2 text-xs font-semibold text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200 transition-all shadow-md shadow-zinc-950/10 hover:shadow-lg hover:-translate-y-0.5 duration-200"
-            >
-              Sign In
-            </Link>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
+                  />
+                </svg>
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-violet-600 text-[10px] font-bold text-white dark:bg-violet-500 animate-pulse">
+                    {cartCount}
+                  </span>
+                )}
+              </Link>
+            )}
+            {isLoggedIn ? (
+              <button
+                onClick={logout}
+                className="rounded-full bg-zinc-900 px-4 py-2 text-xs font-semibold text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200 transition-all shadow-md shadow-zinc-950/10 hover:shadow-lg hover:-translate-y-0.5 duration-200"
+              >
+                Sign Out
+              </button>
+            ) : (
+              <Link
+                href="/sign-in"
+                className="rounded-full bg-zinc-900 px-4 py-2 text-xs font-semibold text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200 transition-all shadow-md shadow-zinc-950/10 hover:shadow-lg hover:-translate-y-0.5 duration-200"
+              >
+                Sign In
+              </Link>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -182,13 +193,25 @@ export default function Navbar() {
                 </svg>
                 <span className="text-sm">Cart ({cartCount} {cartCount === 1 ? "item" : "items"})</span>
               </Link>
-              <Link
-                href="/sign-in"
-                onClick={() => setIsOpen(false)}
-                className="w-full text-center rounded-md bg-zinc-900 px-4 py-2 text-sm font-semibold text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200 transition-colors"
-              >
-                Sign In
-              </Link>
+              {isLoggedIn ? (
+                <button
+                  onClick={() => {
+                    logout();
+                    setIsOpen(false);
+                  }}
+                  className="w-full text-center rounded-md bg-zinc-900 px-4 py-2 text-sm font-semibold text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200 transition-colors"
+                >
+                  Sign Out
+                </button>
+              ) : (
+                <Link
+                  href="/sign-in"
+                  onClick={() => setIsOpen(false)}
+                  className="w-full text-center rounded-md bg-zinc-900 px-4 py-2 text-sm font-semibold text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200 transition-colors"
+                >
+                  Sign In
+                </Link>
+              )}
             </div>
           </div>
         </div>
