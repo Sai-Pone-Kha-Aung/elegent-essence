@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { INITIAL_PRODUCTS } from "@/lib/data";
+import { INITIAL_PRODUCTS, INITIAL_ORDERS } from "@/lib/data";
 import ProductDetailsClient from "./ProductDetailsClient";
 
 interface PageProps {
@@ -23,5 +23,11 @@ export default async function ProductDetailsPage({ params }: PageProps) {
     notFound();
   }
 
-  return <ProductDetailsClient product={product} />;
+  return (
+    <ProductDetailsClient
+      product={product}
+      allProducts={INITIAL_PRODUCTS}
+      allOrders={INITIAL_ORDERS}
+    />
+  );
 }
