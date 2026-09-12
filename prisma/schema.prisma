@@ -9,124 +9,178 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "sqlite" // or "postgresql" for production
 }
 
-model User { 
-  id        String     @id @default(uuid()) 
-  name      String
-  email     String  @unique
-  password  String
-  role      Role    @default(CUSTOMER)
-  status    UserStatus  @default(ACTIVE)
-  phone     String?
-  address   String?
-  preference String?
-  orders    Order[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-} 
+model Brand {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  slug        String    @unique
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
 
 model Product {
-  id            String @id @default(uuid()) 
+  id            String               @id @default(uuid())
   name          String
-  brand         String
-  slug          String
+  slug          String               @unique
+  brandId       String?
+  brand         Brand?               @relation(fields: [brandId], references: [id], onDelete: SetNull)
+  brandName     String               // Stored directly for fast indexed queries
   description   String
-  notes         String?
+  notes         String?              // JSON stringified array of scent notes (Top, Heart, Base)
   ingredients   String?
   imageBg       String
   type          PerfumeType
   category      Category
   gender        Gender
-  volume        String?
+  volume        String?              @default("100ml")
   longevity     Longevity
-  sillage       Sillage
-  price         Float @default(0.0)
-  rating        Float @default(0.0)
-  reviews       Int @default(0)
-  stock         Int @default(0)
-  status        ProductStatus @default(AVAILABLE)
+  sillage       Sillage              @default(MEDIUM)
+  price         Float                @default(0.0)
+  rating        Float                @default(4.5)
+  reviews       Int                  @default(0)
+  stock         Int                  @default(50)
+  status        ProductStatus        @default(AVAILABLE)
   orderItems    OrderItem[]
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  interactions  ProductInteraction[]
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+
+  @@index([brandName])
+  @@index([category])
+  @@index([gender])
+}
+
+model User {
+  id           String               @id @default(uuid())
+  name         String
+  email        String               @unique
+  password     String
+  role         Role                 @default(CUSTOMER)
+  status       UserStatus           @default(ACTIVE)
+  phone        String?
+  address      String?
+  preference   String?              // e.g. "Fresh & Citrus, Woody" for personalized recommendations
+  orders       Order[]
+  interactions ProductInteraction[]
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
 }
 
 model Order {
-  id            String @id @default(uuid())
-  date          DateTime @default(now())
-  total         Float
-  status        OrderStatus @default(PENDING)
-  buyerId       String
-  buyer         User @relation(fields: [buyerId], references: [id], onDelete: Cascade)
-  items         OrderItem[]
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  transaction   Transaction[]
+  id          String        @id @default(uuid())
+  date        DateTime      @default(now())
+  total       Float
+  status      OrderStatus   @default(PENDING)
+  buyerId     String
+  buyer       User          @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  items       OrderItem[]
+  transaction Transaction[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 }
 
 model OrderItem {
-  id            String @id @default(uuid())
-  orderId       String
-  order         Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  productId     String?
-  product       Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
-  name          String
-  quantity      Int
-  volume        String
-  price         Float
-  createdAt     DateTime @default(now())
+  id          String        @id @default(uuid())
+  orderId     String
+  order       Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId   String?
+  product     Product?      @relation(fields: [productId], references: [id], onDelete: SetNull)
+  name        String
+  quantity    Int           @default(1)
+  volume      String
+  price       Float
+  createdAt   DateTime      @default(now())
 }
 
 model Transaction {
-  id          String  @id @default(uuid())
+  id          String            @id @default(uuid())
   orderId     String
-  order       Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order       Order             @relation(fields: [orderId], references: [id], onDelete: Cascade)
   customer    String
-  date        DateTime @default(now())
-  status      TransactionStatus   @default(PENDING)
+  date        DateTime          @default(now())
+  status      TransactionStatus @default(PENDING)
   amount      Float
-  createdAt   DateTime @default(now())
+  createdAt   DateTime          @default(now())
 }
 
-enum Longevity {
-  EIGHT_TWELVE_HOURS       @map("8-12 Hours")
-  SIX_EIGHT_HOURS          @map("6-8 Hours")
-  FOUR_SIX_HOURS           @map("4-6 Hours")
-  TWO_FOUR_HOURS           @map("2-4 Hours")
-  LESS_THAN_TWO_HOURS      @map("Less than 2 Hours")
+model ProductInteraction {
+  id          String            @id @default(uuid())
+  sessionId   String            // Anonymous or authenticated session ID
+  userId      String?
+  user        User?             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
+  action      InteractionAction // VIEW, CLICK, CART_ADD, PURCHASE, SEARCH_SELECT, LIKE
+  dwellTimeMs Int?              // Time spent on product details in milliseconds
+  weight      Float             @default(1.0)
+  createdAt   DateTime          @default(now())
+
+  @@index([sessionId])
+  @@index([userId])
+  @@index([productId])
+  @@index([action])
+  @@index([createdAt])
 }
 
-enum Sillage {
-  STRONG       @map("Strong")
-  MEDIUM       @map("Medium")
-  LIGHT        @map("Light")
-  VERY_STRONG   @map("Very Strong")
-  VERY_LIGHT    @map("Very Light")
+enum InteractionAction {
+  VIEW          @map("VIEW")
+  CLICK         @map("CLICK")
+  CART_ADD      @map("CART_ADD")
+  PURCHASE      @map("PURCHASE")
+  SEARCH_SELECT @map("SEARCH_SELECT")
+  LIKE          @map("LIKE")
 }
 
-enum Gender {
-  MALE       @map("Male")
-  FEMALE     @map("Female")
-  UNISEX     @map("Unisex")
+// --- ENUMS MATCHING output.json ---
+
+enum PerfumeType {
+  EDP                 @map("EDP")
+  EDT                 @map("EDT")
+  PARFUM              @map("Parfum")
+  EXTRAIT_DE_PARFUM   @map("Extrait de Parfum")
+  EXTRAIT             @map("Extrait")
+  COLOGNE             @map("Cologne")
+  ALCOHOL_FREE        @map("Alcohol-free")
+  ATTAR               @map("Attar")
+  CONCENTRATE         @map("Concentrate")
+  OIL                 @map("Oil")
 }
 
 enum Category {
-  WOODY_SPICY      @map("Woody Spicy")
-  WOODY_AROMATIC   @map("Woody Aromatic")
-  AMBER_FLORAL     @map("Amber Floral")
-  FLORIENTAL       @map("Floriental")
-  ORIENTAL_FLORAL  @map("Oriental Floral")
-  AROMATIC_FRUITY  @map("Aromatic Fruity")
-  AROMATIC_SPICY   @map("Aromatic Spicy")
-  FLORAL           @map("Floral")
+  FRESH_CITRUS        @map("Fresh & Citrus")
+  WOODY               @map("Woody")
+  GOURMAND            @map("Gourmand")
+  FLORAL              @map("Floral")
+  ORIENTAL_AMBER      @map("Oriental & Amber")
+  OUD_RICH_WOODS      @map("Oud & Rich Woods")
+  LEATHER             @map("Leather")
+  AROMATIC_FOUGERE    @map("Aromatic / Fougère")
+  OTHER               @map("Other")
+  UNKNOWN             @map("Unknown")
 }
 
-enum PerfumeType {
-  PARFUM   @map("Parfum")
-  EDT      @map("EDT")
-  EDP      @map("EDP")
-  EDC      @map("EDC")
+enum Gender {
+  MALE    @map("Male")
+  FEMALE  @map("Female")
+  UNISEX  @map("Unisex")
+}
+
+enum Longevity {
+  STRONG        @map("Strong")
+  MEDIUM        @map("Medium")
+  LIGHT         @map("Light")
+  VERY_STRONG   @map("Very Strong")
+}
+
+enum Sillage {
+  VERY_LIGHT  @map("Very Light")
+  LIGHT       @map("Light")
+  MEDIUM      @map("Medium")
+  STRONG      @map("Strong")
+  VERY_STRONG @map("Very Strong")
 }
 
 enum Role {
@@ -140,25 +194,25 @@ enum UserStatus {
 }
 
 enum ProductStatus {
-  AVAILABLE @map("Available")
+  AVAILABLE    @map("Available")
   OUT_OF_STOCK @map("Out of Stock")
-  LOW_STOCK @map("Low Stock")
-  IN_STOCK @map("In Stock")
-  COMING_SOON @map("Coming Soon")
-}
-
-enum TransactionStatus {
-  PAID @map("Paid")
-  PENDING @map("Pending")
-  FAILED @map("Failed")
-  REFUNDED @map("Refunded")
-  COMPLETED @map("Completed")
+  LOW_STOCK    @map("Low Stock")
+  IN_STOCK     @map("In Stock")
+  COMING_SOON  @map("Coming Soon")
 }
 
 enum OrderStatus {
+  PENDING    @map("Pending")
   PROCESSING @map("Processing")
-  SHIPPED @map("Shipped")
-  DELIVERED @map("Delivered")
-  CANCELLED @map("Cancelled")
+  SHIPPED    @map("Shipped")
+  DELIVERED  @map("Delivered")
+  CANCELLED  @map("Cancelled")
+}
+
+enum TransactionStatus {
   PENDING   @map("Pending")
+  PAID      @map("Paid")
+  FAILED    @map("Failed")
+  REFUNDED  @map("Refunded")
+  COMPLETED @map("Completed")
 }

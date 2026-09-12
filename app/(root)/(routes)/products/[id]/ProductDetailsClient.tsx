@@ -1,41 +1,66 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Product, Order } from "@/types";
 import { useCart } from "@/hooks/useCart";
-import { formatCurrency } from "@/lib/format";
+import { formatCurrency, formatCategory, formatPerfumeType } from "@/lib/format";
 import { INITIAL_PRODUCTS, INITIAL_ORDERS } from "@/lib/data";
 import { getRelatedProducts, getFrequentlyBoughtTogether } from "@/lib/recommender_engine/recommender";
 import ProductCard from "@/components/product/ProductCard";
+import { trackInteraction } from "@/lib/telemetry";
 
 interface ProductDetailsClientProps {
   product: Product;
+  relatedProducts?: Product[];
   allProducts?: Product[];
   allOrders?: Order[];
 }
 
 export default function ProductDetailsClient({
   product,
+  relatedProducts: initialRelatedProducts,
   allProducts = INITIAL_PRODUCTS,
   allOrders = INITIAL_ORDERS,
 }: ProductDetailsClientProps) {
   const { addToCart } = useCart();
   const [selectedVolume, setSelectedVolume] = useState("100 ml (Recommended)");
+  const startTimeRef = useRef<number>(Date.now());
 
-  const relatedProducts = getRelatedProducts(product, allProducts, 3);
+  // Track product view and dwell time telemetry
+  useEffect(() => {
+    startTimeRef.current = Date.now();
+    trackInteraction(product.id, "VIEW");
+
+    return () => {
+      const dwellTimeMs = Date.now() - startTimeRef.current;
+      if (dwellTimeMs > 1000) {
+        trackInteraction(product.id, "VIEW", dwellTimeMs);
+      }
+    };
+  }, [product.id]);
+
+  const relatedProducts =
+    initialRelatedProducts && initialRelatedProducts.length > 0
+      ? initialRelatedProducts
+      : getRelatedProducts(product, allProducts, 3);
+
   const frequentlyBoughtTogether = getFrequentlyBoughtTogether(product.id, allOrders, allProducts, 2);
 
   const handleAddToCart = () => {
+    trackInteraction(product.id, "CART_ADD");
     addToCart(product, selectedVolume);
   };
 
   const handleBuyInstantly = () => {
+    trackInteraction(product.id, "CART_ADD");
     addToCart(product, selectedVolume);
   };
 
   const handleAddBundleToCart = () => {
+    trackInteraction(product.id, "CART_ADD");
     addToCart(product, selectedVolume);
     frequentlyBoughtTogether.forEach((item) => {
+      trackInteraction(item.id, "CART_ADD");
       addToCart(item, item.volume || "100 ml");
     });
   };

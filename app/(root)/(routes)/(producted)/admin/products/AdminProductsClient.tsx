@@ -12,7 +12,7 @@ export default function AdminProductsClient() {
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newName, setNewName] = useState("");
-  const [newCategory, setNewCategory] = useState<Category>(Category.WOODY_SPICY);
+  const [newCategory, setNewCategory] = useState<Category>(Category.WOODY);
   const [newPrice, setNewPrice] = useState("150");
   const [newStock, setNewStock] = useState("20");
   const [newDescription, setNewDescription] = useState("");
@@ -241,12 +241,15 @@ export default function AdminProductsClient() {
                     onChange={(e) => setNewCategory(e.target.value as Category)}
                     className="mt-1 block w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs text-zinc-900 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950 dark:text-white"
                   >
-                    <option value={Category.WOODY_SPICY}>Woody & Warm</option>
-                    <option value={Category.FLORAL}>Floral & Fresh</option>
-                    <option value={Category.AMBER_FLORAL}>Oriental & Rich</option>
-                    <option value={Category.AROMATIC_FRUITY}>Fresh & Citrus</option>
-                    <option value={Category.WOODY_AROMATIC}>Fresh & Aquatic</option>
-                    <option value={Category.ORIENTAL_FLORAL}>Sensual Floral</option>
+                    <option value={Category.FRESH_CITRUS}>Fresh & Citrus</option>
+                    <option value={Category.WOODY}>Woody</option>
+                    <option value={Category.GOURMAND}>Gourmand</option>
+                    <option value={Category.FLORAL}>Floral</option>
+                    <option value={Category.ORIENTAL_AMBER}>Oriental & Amber</option>
+                    <option value={Category.OUD_RICH_WOODS}>Oud & Rich Woods</option>
+                    <option value={Category.LEATHER}>Leather</option>
+                    <option value={Category.AROMATIC_FOUGERE}>Aromatic / Fougère</option>
+                    <option value={Category.OTHER}>Other</option>
                   </select>
                 </div>
                 <div>

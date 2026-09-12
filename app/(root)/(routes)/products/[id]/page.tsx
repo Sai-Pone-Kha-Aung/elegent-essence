@@ -1,23 +1,29 @@
 import { notFound } from "next/navigation";
-import { INITIAL_PRODUCTS, INITIAL_ORDERS } from "@/lib/data";
+import { getProductByIdOrSlug, getOptimizedRelatedProducts } from "@/lib/db/products";
+import { INITIAL_ORDERS } from "@/lib/data";
 import ProductDetailsClient from "./ProductDetailsClient";
 
 interface PageProps {
   params: Promise<{ id: string }>;
 }
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({ params }: PageProps) {
   const { id } = await params;
-  const product = INITIAL_PRODUCTS.find((p) => p.id === id);
+  const product = await getProductByIdOrSlug(id);
   return {
-    title: `${product ? product.name : "Product Details"} - Elegant Essence`,
-    description: product ? product.description : "Details of our premium essence.",
+    title: `${product ? `${product.name} (${product.brand})` : "Fragrance Details"} - Elegant Essence`,
+    description: product ? product.description : "Details of our artisanal fragrance.",
   };
 }
 
 export default async function ProductDetailsPage({ params }: PageProps) {
   const { id } = await params;
-  const product = INITIAL_PRODUCTS.find((p) => p.id === id);
+  const [product, relatedProducts] = await Promise.all([
+    getProductByIdOrSlug(id),
+    getOptimizedRelatedProducts(id, 3),
+  ]);
 
   if (!product) {
     notFound();
@@ -26,8 +32,10 @@ export default async function ProductDetailsPage({ params }: PageProps) {
   return (
     <ProductDetailsClient
       product={product}
-      allProducts={INITIAL_PRODUCTS}
+      relatedProducts={relatedProducts}
       allOrders={INITIAL_ORDERS}
     />
   );
 }
+
+
