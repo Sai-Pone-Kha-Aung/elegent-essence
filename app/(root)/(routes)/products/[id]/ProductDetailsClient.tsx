@@ -177,6 +177,24 @@ export default function ProductDetailsClient({
                 ))}
               </ul>
             </div>
+            {/* Fragrance Type */}
+            <div className="mt-8">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-white">
+                Fragrance Type
+              </h3>
+              <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed tracking-wider">
+                {product.type}
+              </p>
+            </div>
+            {/* Gender */}
+            <div className="mt-8">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-white">
+                Target Audience
+              </h3>
+              <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed tracking-wider">
+                {product.gender}
+              </p>
+            </div>
           </div>
 
           <div className="mt-10 border-t border-zinc-200 dark:border-zinc-800/60 pt-6">
@@ -249,6 +267,17 @@ export default function ProductDetailsClient({
                 <h4 className="mt-1 font-bold text-zinc-900 dark:text-white">{product.name}</h4>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400">{product.category}</p>
               </div>
+              <div className={`aspect-square w-full rounded-xl bg-linear-to-br ${product.imageBg} relative overflow-hidden flex items-center justify-center`}>
+                <div className="w-16 h-28 border border-white/20 rounded-md relative flex flex-col items-center justify-between p-2 bg-white/5 backdrop-blur-sm shadow-2xl">
+                  <div className="w-4 h-4 border border-white/30 bg-white/20 rounded-t" />
+                  <div className="grow w-full border border-white/10 mt-1 rounded bg-white/5 flex items-center justify-center">
+                    <span className="text-[9px] font-bold tracking-widest text-white/50 text-center uppercase">
+                      EE
+                    </span>
+                  </div>
+                </div>
+              </div>
+
               <p className="mt-4 text-sm font-extrabold text-violet-700 dark:text-violet-400">{formatCurrency(product.price)}</p>
             </div>
 
