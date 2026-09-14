@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { INITIAL_PRODUCTS } from "@/lib/data";
+import { getFeaturedProducts } from "@/lib/db/products";
 import ProductCard from "@/components/product/ProductCard";
 
-export default function FeaturedProducts() {
-  const featuredProducts = INITIAL_PRODUCTS.filter((p) => ["1", "3", "6"].includes(p.id));
+export default async function FeaturedProducts() {
+  const featuredProducts = await getFeaturedProducts(6);
 
   return (
     <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
@@ -12,15 +12,15 @@ export default function FeaturedProducts() {
           <h2 className="text-2xl font-extrabold tracking-tight text-zinc-900 dark:text-white sm:text-3xl">
             Featured Essences
           </h2>
-          <p className="mt-1 text-sm text-zinc-500">
-            Hand-selected favorites from our modern formulation logs.
+          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+            Hand-selected top-rated favorites from our curated 940+ fragrance collection.
           </p>
         </div>
         <Link
           href="/products"
-          className="text-xs font-bold text-violet-650 hover:text-violet-550 dark:text-violet-450 flex items-center gap-1 group"
+          className="text-xs font-bold text-violet-600 hover:text-violet-500 dark:text-violet-400 flex items-center gap-1 group"
         >
-          View All Products
+          View All Fragrances
           <svg
             className="h-3 w-3 transition-transform duration-200 group-hover:translate-x-0.5"
             fill="none"
@@ -40,3 +40,4 @@ export default function FeaturedProducts() {
     </section>
   );
 }
+

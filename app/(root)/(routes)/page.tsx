@@ -1,5 +1,7 @@
 import HeroSection from "@/components/landing/HeroSection";
 import FeaturedProducts from "@/components/landing/FeaturedProducts";
+import ScentOnboardingCard from "@/components/recommender/ScentOnboardingCard";
+import PersonalizedShelf from "@/components/recommender/PersonalizedShelf";
 import BrandValues from "@/components/landing/BrandValues";
 import Testimonials from "@/components/landing/Testimonials";
 import PartnerBrands from "@/components/landing/PartnerBrands";
@@ -12,10 +14,19 @@ export const metadata = {
   description: "Discover handcrafted, premium olfactory blends that evoke deep emotion and memory.",
 };
 
+export const dynamic = "force-dynamic";
+
 export default function Home() {
   return (
     <div className="flex flex-col gap-24 pb-20">
       <HeroSection />
+
+      {/* Recommender Cold-Start Onboarding & Personalized Shelf */}
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full space-y-16">
+        <ScentOnboardingCard />
+        <PersonalizedShelf />
+      </div>
+
       <FeaturedProducts />
       <BrandValues />
       <Testimonials />
@@ -26,3 +37,4 @@ export default function Home() {
     </div>
   );
 }
+

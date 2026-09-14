@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Product } from "@/types";
-import { formatCurrency } from "@/lib/format";
+import { formatCurrency, formatCategory, formatPerfumeType } from "@/lib/format";
 
 interface ProductCardProps {
   product: Product;
@@ -8,6 +8,10 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product, featured = false }: ProductCardProps) {
+  const categoryLabel = formatCategory(product.category);
+  const typeLabel = formatPerfumeType(product.type);
+  const brandName = product.brand || "ELEGANT ESSENCE";
+
   if (featured) {
     // Homepage featured card style
     return (
@@ -21,15 +25,21 @@ export default function ProductCard({ product, featured = false }: ProductCardPr
           <div className="w-12 h-20 border border-white/20 rounded-md relative flex flex-col items-center justify-between p-1 bg-white/5 backdrop-blur-sm">
             <span className="text-[7px] font-bold text-white/45">EE</span>
           </div>
+          <span className="absolute top-2.5 right-2.5 rounded-full bg-black/40 px-2 py-0.5 text-[9px] font-semibold text-white/90 backdrop-blur-md">
+            {typeLabel}
+          </span>
         </div>
 
         {/* Title & Price */}
         <div className="mt-4 flex items-center justify-between">
           <div>
-            <h3 className="text-sm font-bold text-zinc-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
+            <span className="text-[10px] font-bold tracking-wider text-violet-600 dark:text-violet-400 uppercase">
+              {brandName}
+            </span>
+            <h3 className="text-sm font-bold text-zinc-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors line-clamp-1">
               {product.name}
             </h3>
-            <p className="mt-0.5 text-xs text-zinc-400">{product.category}</p>
+            <p className="mt-0.5 text-xs text-zinc-400">{categoryLabel}</p>
           </div>
           <p className="text-sm font-semibold text-zinc-900 dark:text-white">
             {formatCurrency(product.price)}
@@ -59,20 +69,28 @@ export default function ProductCard({ product, featured = false }: ProductCardPr
           </div>
         </div>
 
-        {/* Tag */}
+        {/* Category Tag */}
         <span className="absolute top-3 right-3 rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-950 backdrop-blur dark:bg-zinc-900/90 dark:text-white border border-zinc-200/20">
-          {product.category}
+          {categoryLabel}
+        </span>
+
+        {/* Type Tag */}
+        <span className="absolute bottom-3 left-3 rounded-full bg-black/40 px-2 py-0.5 text-[9px] font-semibold text-white/90 backdrop-blur-md">
+          {typeLabel}
         </span>
       </div>
 
       {/* Content info */}
       <div className="mt-4 flex flex-1 flex-col justify-between">
         <div>
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold text-zinc-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
+          <span className="text-[10px] font-bold tracking-wider text-violet-600 dark:text-violet-400 uppercase">
+            {brandName}
+          </span>
+          <div className="flex items-center justify-between mt-0.5">
+            <h3 className="text-sm font-bold text-zinc-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors line-clamp-1">
               {product.name}
             </h3>
-            <p className="text-sm font-semibold text-zinc-900 dark:text-white">
+            <p className="text-sm font-semibold text-zinc-900 dark:text-white shrink-0 ml-2">
               {formatCurrency(product.price)}
             </p>
           </div>
@@ -119,3 +137,4 @@ export default function ProductCard({ product, featured = false }: ProductCardPr
     </Link>
   );
 }
+

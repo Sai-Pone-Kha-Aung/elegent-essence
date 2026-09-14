@@ -1,25 +1,71 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { Product } from "@/types";
+import { Product, Order } from "@/types";
 import { useCart } from "@/hooks/useCart";
-import { formatCurrency } from "@/lib/format";
+import { formatCurrency, formatCategory, formatPerfumeType } from "@/lib/format";
+import { INITIAL_PRODUCTS, INITIAL_ORDERS } from "@/lib/data";
+import { getRelatedProducts, getFrequentlyBoughtTogether } from "@/lib/recommender_engine/recommender";
+import ProductCard from "@/components/product/ProductCard";
+import { trackInteraction } from "@/lib/telemetry";
 
 interface ProductDetailsClientProps {
   product: Product;
+  relatedProducts?: Product[];
+  allProducts?: Product[];
+  allOrders?: Order[];
 }
 
-export default function ProductDetailsClient({ product }: ProductDetailsClientProps) {
+export default function ProductDetailsClient({
+  product,
+  relatedProducts: initialRelatedProducts,
+  allProducts = INITIAL_PRODUCTS,
+  allOrders = INITIAL_ORDERS,
+}: ProductDetailsClientProps) {
   const { addToCart } = useCart();
   const [selectedVolume, setSelectedVolume] = useState("100 ml (Recommended)");
+  const startTimeRef = useRef<number>(Date.now());
+
+  // Track product view and dwell time telemetry
+  useEffect(() => {
+    startTimeRef.current = Date.now();
+    trackInteraction(product.id, "VIEW");
+
+    return () => {
+      const dwellTimeMs = Date.now() - startTimeRef.current;
+      if (dwellTimeMs > 1000) {
+        trackInteraction(product.id, "VIEW", dwellTimeMs);
+      }
+    };
+  }, [product.id]);
+
+  const relatedProducts =
+    initialRelatedProducts && initialRelatedProducts.length > 0
+      ? initialRelatedProducts
+      : getRelatedProducts(product, allProducts, 3);
+
+  const frequentlyBoughtTogether = getFrequentlyBoughtTogether(product.id, allOrders, allProducts, 2);
 
   const handleAddToCart = () => {
+    trackInteraction(product.id, "CART_ADD");
     addToCart(product, selectedVolume);
   };
 
   const handleBuyInstantly = () => {
+    trackInteraction(product.id, "CART_ADD");
     addToCart(product, selectedVolume);
   };
+
+  const handleAddBundleToCart = () => {
+    trackInteraction(product.id, "CART_ADD");
+    addToCart(product, selectedVolume);
+    frequentlyBoughtTogether.forEach((item) => {
+      trackInteraction(item.id, "CART_ADD");
+      addToCart(item, item.volume || "100 ml");
+    });
+  };
+
+  const bundleTotalPrice = product.price + frequentlyBoughtTogether.reduce((acc, p) => acc + p.price, 0);
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
@@ -110,7 +156,7 @@ export default function ProductDetailsClient({ product }: ProductDetailsClientPr
             {/* Description */}
             <div className="mt-6">
               <h3 className="sr-only">Description</h3>
-              <p className="text-sm text-zinc-660 dark:text-zinc-400 leading-relaxed">
+              <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
                 {product.description}
               </p>
             </div>
@@ -174,6 +220,65 @@ export default function ProductDetailsClient({ product }: ProductDetailsClientPr
           </div>
         </div>
       </div>
+
+      {/* Frequently Bought Together (Recommender Integration) */}
+      {frequentlyBoughtTogether.length > 0 && (
+        <div className="mt-16 border-t border-zinc-200 dark:border-zinc-800 pt-10">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+            <div>
+              <h2 className="text-xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
+                Frequently Bought Together
+              </h2>
+              <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                Customers who bought <span className="font-semibold text-zinc-800 dark:text-zinc-200">{product.name}</span> also frequently added these complementary scents.
+              </p>
+            </div>
+            <button
+              onClick={handleAddBundleToCart}
+              className="mt-4 sm:mt-0 inline-flex items-center justify-center rounded-xl bg-violet-600 px-5 py-2.5 text-xs font-bold text-white shadow hover:bg-violet-500 transition-all cursor-pointer"
+            >
+              Add Full Bundle ({formatCurrency(bundleTotalPrice)})
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Current item card summary */}
+            <div className="rounded-2xl border border-violet-500/30 bg-violet-50/50 dark:bg-violet-950/20 p-4 flex flex-col justify-between">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-violet-600 dark:text-violet-400">Current Selection</span>
+                <h4 className="mt-1 font-bold text-zinc-900 dark:text-white">{product.name}</h4>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400">{product.category}</p>
+              </div>
+              <p className="mt-4 text-sm font-extrabold text-violet-700 dark:text-violet-400">{formatCurrency(product.price)}</p>
+            </div>
+
+            {/* Frequently bought items */}
+            {frequentlyBoughtTogether.map((item) => (
+              <ProductCard key={item.id} product={item} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* You May Also Like / Related Products (Recommender Integration) */}
+      {relatedProducts.length > 0 && (
+        <div className="mt-16 border-t border-zinc-200 dark:border-zinc-800 pt-10">
+          <div className="mb-6">
+            <h2 className="text-xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
+              You May Also Like
+            </h2>
+            <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+              Curated recommendations with matching olfactory notes and category profiles.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {relatedProducts.map((related) => (
+              <ProductCard key={related.id} product={related} />
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Accordions/Details Tabs */}
       <div className="mt-16 border-t border-zinc-200 dark:border-zinc-800 pt-10">
