@@ -1,7 +1,7 @@
 export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat("mm-MM", {
+  return new Intl.NumberFormat("th-TH", {
     style: "currency",
-    currency: "MMK",
+    currency: "THB",
   }).format(amount);
 }
 
