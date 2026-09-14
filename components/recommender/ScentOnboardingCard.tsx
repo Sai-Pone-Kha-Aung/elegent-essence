@@ -57,13 +57,13 @@ export default function ScentOnboardingCard({ onPreferenceSet }: ScentOnboarding
 
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
         <div>
-          <div className="inline-flex items-center gap-2 rounded-full bg-violet-500/10 border border-violet-500/20 px-3 py-1 text-xs font-semibold text-violet-400 mb-2">
+          <div className="inline-flex items-center gap-2 rounded-full bg-violet-500/10 border border-violet-500/20 px-3 py-1 text-xs font-semibold text-violet-600 mb-2">
             ✨ Cold-Start Fragrance Profiler
           </div>
           <h2 className="text-xl sm:text-2xl font-bold tracking-tight">
             {hasSaved ? "Your Active Olfactory Signature" : "Discover Your Scent Profile"}
           </h2>
-          <p className="mt-1 text-xs sm:text-sm text-zinc-400 max-w-xl">
+          <p className="mt-1 text-xs sm:text-sm text-zinc-00 max-w-xl">
             {hasSaved
               ? "We tailor our live recommendations and catalogue order based on your preferences."
               : "Select up to 3 olfactory families you love. Our recommendation engine will instantly calibrate to your taste."}
