@@ -49,4 +49,3 @@ export function formatPerfumeType(type: string | undefined): string {
   if (!type) return "EDP";
   return TYPE_LABELS[type] || type.replace(/_/g, " ");
 }
-
