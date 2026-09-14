@@ -129,8 +129,8 @@ export default function AdminUsersClient() {
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-50 dark:divide-zinc-800/50 text-xs">
-              {filteredUsers.map((user) => (
-                <tr key={user.email} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-950/20">
+              {filteredUsers.map((user, index) => (
+                <tr key={`${user.id || user.email}-${index}`} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-950/20">
                   <td className="py-4">
                     <p className="font-bold text-zinc-900 dark:text-white">{user.name}</p>
                     <p className="text-[10px] text-zinc-400">{user.email}</p>

@@ -1,7 +1,7 @@
 "use client";
-import React from "react";
 import ProductGrid from "@/components/product/ProductGrid";
 import ScentOnboardingCard from "@/components/recommender/ScentOnboardingCard";
+import { useAuth } from "@/hooks/useAuth";
 import { Product } from "@/types";
 
 interface ProductsClientProps {
@@ -17,6 +17,8 @@ export default function ProductsClient({
   initialBrands = [],
   initialCategories = [],
 }: ProductsClientProps) {
+  const { isLoggedIn } = useAuth();
+
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 space-y-10">
       {/* Header */}
@@ -33,7 +35,7 @@ export default function ProductsClient({
       </div>
 
       {/* Scent Profiler Card */}
-      <ScentOnboardingCard />
+      {isLoggedIn && <ScentOnboardingCard />}
 
       <ProductGrid
         initialProducts={initialProducts}

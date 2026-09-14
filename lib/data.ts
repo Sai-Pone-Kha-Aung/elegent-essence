@@ -1,15 +1,15 @@
 import { Product, Order, User, Transaction, CartItem } from "@/types";
-import { 
-  Category, 
-  ProductStatus, 
-  PerfumeType, 
-  Gender, 
-  Longevity, 
-  Sillage, 
-  OrderStatus, 
-  Role, 
-  UserStatus, 
-  TransactionStatus 
+import {
+  Category,
+  ProductStatus,
+  PerfumeType,
+  Gender,
+  Longevity,
+  Sillage,
+  OrderStatus,
+  Role,
+  UserStatus,
+  TransactionStatus,
 } from "../generated/prisma/enums";
 
 export const INITIAL_PRODUCTS: Product[] = [
@@ -181,36 +181,66 @@ export const INITIAL_ORDERS: Order[] = [
   {
     id: "EE-9283-091",
     date: "June 12, 2026",
-    total: 523.80,
+    total: 523.8,
     status: OrderStatus.PROCESSING,
     buyerId: "user-john",
     buyer: "John Doe",
     items: [
-      { name: "Mystique Oud", qty: 1, quantity: 1, volume: "100 ml", price: 185.00 },
-      { name: "Amber Velvet", qty: 1, quantity: 1, volume: "50 ml", price: 165.00 },
-      { name: "Oceanic Mist", qty: 1, quantity: 1, volume: "100 ml", price: 135.00 },
+      {
+        name: "Mystique Oud",
+        qty: 1,
+        quantity: 1,
+        volume: "100 ml",
+        price: 185.0,
+      },
+      {
+        name: "Amber Velvet",
+        qty: 1,
+        quantity: 1,
+        volume: "50 ml",
+        price: 165.0,
+      },
+      {
+        name: "Oceanic Mist",
+        qty: 1,
+        quantity: 1,
+        volume: "100 ml",
+        price: 135.0,
+      },
     ],
   },
   {
     id: "EE-8120-745",
     date: "May 28, 2026",
-    total: 151.20,
+    total: 151.2,
     status: OrderStatus.DELIVERED,
     buyerId: "user-sarah",
     buyer: "Sarah Connor",
     items: [
-      { name: "Sylvan Bloom", qty: 1, quantity: 1, volume: "100 ml", price: 140.00 },
+      {
+        name: "Sylvan Bloom",
+        qty: 1,
+        quantity: 1,
+        volume: "100 ml",
+        price: 140.0,
+      },
     ],
   },
   {
     id: "EE-3049-112",
     date: "April 15, 2026",
-    total: 210.60,
+    total: 210.6,
     status: OrderStatus.DELIVERED,
     buyerId: "user-emma",
     buyer: "Emma Watson",
     items: [
-      { name: "Noir Jasmine", qty: 1, quantity: 1, volume: "100 ml", price: 195.00 },
+      {
+        name: "Noir Jasmine",
+        qty: 1,
+        quantity: 1,
+        volume: "100 ml",
+        price: 195.0,
+      },
     ],
   },
 ];
@@ -239,8 +269,8 @@ export const INITIAL_USERS: User[] = [
   },
   {
     id: "user-admin",
-    name: "Admin Chief",
-    email: "chief@elegantessence.com",
+    name: "Admin",
+    email: "admin@elegantessence.com",
     password: "adminpassword",
     role: Role.ADMIN,
     status: UserStatus.ACTIVE,
@@ -297,8 +327,36 @@ export const INITIAL_CART_ITEMS: CartItem[] = [
 ];
 
 export const RECENT_TRANSACTIONS: Transaction[] = [
-  { id: "TXN-9018", orderId: "EE-9283-091", customer: "Sophia Martinez", date: "Just now", status: TransactionStatus.PAID, amount: 185.00 },
-  { id: "TXN-8902", orderId: "EE-8120-745", customer: "Liam Johnson", date: "12 mins ago", status: TransactionStatus.PAID, amount: 305.00 },
-  { id: "TXN-8843", orderId: "EE-3049-112", customer: "Emma Watson", date: "45 mins ago", status: TransactionStatus.FAILED, amount: 140.00 },
-  { id: "TXN-8798", orderId: "EE-9283-091", customer: "Noah Alvi", date: "2 hours ago", status: TransactionStatus.PAID, amount: 523.80 },
+  {
+    id: "TXN-9018",
+    orderId: "EE-9283-091",
+    customer: "Sophia Martinez",
+    date: "Just now",
+    status: TransactionStatus.PAID,
+    amount: 185.0,
+  },
+  {
+    id: "TXN-8902",
+    orderId: "EE-8120-745",
+    customer: "Liam Johnson",
+    date: "12 mins ago",
+    status: TransactionStatus.PAID,
+    amount: 305.0,
+  },
+  {
+    id: "TXN-8843",
+    orderId: "EE-3049-112",
+    customer: "Emma Watson",
+    date: "45 mins ago",
+    status: TransactionStatus.FAILED,
+    amount: 140.0,
+  },
+  {
+    id: "TXN-8798",
+    orderId: "EE-9283-091",
+    customer: "Noah Alvi",
+    date: "2 hours ago",
+    status: TransactionStatus.PAID,
+    amount: 523.8,
+  },
 ];

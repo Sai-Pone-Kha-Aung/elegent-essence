@@ -5,7 +5,15 @@ import { useRouter } from "next/navigation";
 import { Role } from "@/types";
 
 export function useAuth() {
-  const { profile, initializeProfile, users, logout } = useProfileStore();
+  const {
+    profile,
+    initializeProfile,
+    users,
+    isInitialized,
+    login,
+    signup,
+    logout,
+  } = useProfileStore();
   const router = useRouter();
 
   useEffect(() => {
@@ -25,7 +33,10 @@ export function useAuth() {
     users,
     isLoggedIn,
     isAdmin,
+    isInitialized,
     userRole: profile?.role,
+    login,
+    signup,
     logout: handleLogout,
   };
 }

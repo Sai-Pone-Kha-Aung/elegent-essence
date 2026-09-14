@@ -1,7 +1,6 @@
 import HeroSection from "@/components/landing/HeroSection";
 import FeaturedProducts from "@/components/landing/FeaturedProducts";
-import ScentOnboardingCard from "@/components/recommender/ScentOnboardingCard";
-import PersonalizedShelf from "@/components/recommender/PersonalizedShelf";
+import PersonalizedSection from "@/components/recommender/PersonalizedSection";
 import BrandValues from "@/components/landing/BrandValues";
 import Testimonials from "@/components/landing/Testimonials";
 import PartnerBrands from "@/components/landing/PartnerBrands";
@@ -21,11 +20,8 @@ export default function Home() {
     <div className="flex flex-col gap-24 pb-20">
       <HeroSection />
 
-      {/* Recommender Cold-Start Onboarding & Personalized Shelf */}
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full space-y-16">
-        <ScentOnboardingCard />
-        <PersonalizedShelf />
-      </div>
+      {/* Recommender Cold-Start Onboarding & Personalized Shelf (Only visible for logged-in users) */}
+      <PersonalizedSection />
 
       <FeaturedProducts />
       <BrandValues />

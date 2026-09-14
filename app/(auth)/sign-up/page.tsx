@@ -1,9 +1,58 @@
 "use client";
+
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function SignUpPage() {
+  const router = useRouter();
+  const { signup } = useAuth();
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
+    if (!name.trim()) {
+      setError("Please enter your full name.");
+      return;
+    }
+
+    if (!email.trim()) {
+      setError("Please enter your email address.");
+      return;
+    }
+
+    if (!password || password.length < 6) {
+      setError("Password must be at least 6 characters long.");
+      return;
+    }
+
+    if (!termsAccepted) {
+      setError("You must agree to the Terms of Service and Privacy Policy.");
+      return;
+    }
+
+    setIsLoading(true);
+
+    const result = signup({ name, email, password });
+
+    if (!result.success) {
+      setError(result.error || "Failed to create account.");
+      setIsLoading(false);
+      return;
+    }
+
+    router.push("/");
+  };
 
   return (
     <div className="flex min-h-screen flex-col justify-center py-12 sm:px-6 lg:px-8 bg-zinc-50 dark:bg-zinc-950 transition-colors duration-300">
@@ -29,7 +78,16 @@ export default function SignUpPage() {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white px-4 py-8 shadow-xl shadow-zinc-200/55 dark:shadow-none sm:rounded-2xl sm:px-10 dark:bg-zinc-900 border border-zinc-200/50 dark:border-zinc-800/80">
-          <form className="space-y-6" action="#" method="POST">
+          
+          {/* Error Message Box */}
+          {error && (
+            <div className="mb-6 rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950/30 dark:text-red-400 border border-red-200 dark:border-red-900/40 flex items-start gap-2 animate-in fade-in duration-150">
+              <span className="text-red-500 font-bold shrink-0">⚠️</span>
+              <span>{error}</span>
+            </div>
+          )}
+
+          <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label
                 htmlFor="name"
@@ -42,6 +100,8 @@ export default function SignUpPage() {
                   id="name"
                   name="name"
                   type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                   autoComplete="name"
                   required
                   placeholder="John Doe"
@@ -62,6 +122,8 @@ export default function SignUpPage() {
                   id="email"
                   name="email"
                   type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   autoComplete="email"
                   required
                   placeholder="name@example.com"
@@ -82,6 +144,8 @@ export default function SignUpPage() {
                   id="password"
                   name="password"
                   type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   autoComplete="new-password"
                   required
                   placeholder="••••••••"
@@ -90,11 +154,14 @@ export default function SignUpPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="text-xs font-semibold text-violet-600 hover:text-violet-550 dark:text-violet-450 dark:hover:text-violet-400 absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer focus:outline-none select-none"
+                  className="text-xs font-semibold text-violet-600 hover:text-violet-500 dark:text-violet-400 dark:hover:text-violet-300 absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer focus:outline-none select-none"
                 >
                   {showPassword ? "Hide" : "Show"}
                 </button>
               </div>
+              <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                Must be at least 6 characters.
+              </p>
             </div>
 
             <div className="flex items-center">
@@ -102,37 +169,43 @@ export default function SignUpPage() {
                 id="terms"
                 name="terms"
                 type="checkbox"
-                required
-                className="h-4 w-4 rounded border-zinc-300 text-violet-600 focus:ring-violet-500 dark:border-zinc-800 dark:bg-zinc-950 dark:focus:ring-offset-zinc-900"
+                checked={termsAccepted}
+                onChange={(e) => setTermsAccepted(e.target.checked)}
+                className="h-4 w-4 rounded border-zinc-300 text-violet-600 focus:ring-violet-500 dark:border-zinc-800 dark:bg-zinc-950 dark:focus:ring-offset-zinc-900 cursor-pointer"
               />
               <label
                 htmlFor="terms"
-                className="ml-2 block text-sm text-zinc-900 dark:text-zinc-300"
+                className="ml-2 block text-sm text-zinc-900 dark:text-zinc-300 cursor-pointer select-none"
               >
                 I agree to the{" "}
-                <a
-                  href="#"
-                  className="font-medium text-violet-600 hover:text-violet-500 dark:text-violet-400 dark:hover:text-violet-300"
-                >
+                <span className="font-medium text-violet-600 dark:text-violet-400">
                   Terms of Service
-                </a>{" "}
+                </span>{" "}
                 and{" "}
-                <a
-                  href="#"
-                  className="font-medium text-violet-600 hover:text-violet-500 dark:text-violet-400 dark:hover:text-violet-300"
-                >
+                <span className="font-medium text-violet-600 dark:text-violet-400">
                   Privacy Policy
-                </a>
+                </span>
               </label>
             </div>
 
             <div>
-              <Link
-                href="/"
-                className="flex w-full justify-center rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-zinc-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200 transition-colors"
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="flex w-full justify-center items-center rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-zinc-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200 transition-colors cursor-pointer disabled:opacity-50"
               >
-                Create Account
-              </Link>
+                {isLoading ? (
+                  <span className="inline-flex items-center gap-2">
+                    <svg className="h-4 w-4 animate-spin text-current" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                    </svg>
+                    Creating account...
+                  </span>
+                ) : (
+                  "Create Account"
+                )}
+              </button>
             </div>
           </form>
         </div>
